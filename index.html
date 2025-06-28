@@ -45,7 +45,7 @@
     background: #eee;
     cursor: pointer;
     box-sizing: border-box;
-    position: relative;
+    position: relative;    
     max-height: 90vh;
   }
   .ball {
@@ -57,6 +57,13 @@
     transition: all 0.3s ease;
     position: relative;
   }
+  .ball.dance {
+    animation: dance 0.5s infinite alternate;
+  }
+  @keyframes dance {
+    0% { transform: translateY(0) rotate(0); }
+    100% { transform: translateY(-5px) rotate(3deg); }
+  }
   .flask.selected {
     border-color: red;
   }
@@ -64,6 +71,9 @@
     margin: 6px;
     padding: 6px 12px;
     font-size: 14px;
+  }
+  #continueBtn {
+    display: none;
   }
   @media (max-width: 800px) {
     .ball {
@@ -80,10 +90,10 @@
 </div>
 <div id="game"></div>
 <button onclick="startGame()">Restart Game</button>
+<button id="continueBtn" onclick="startGame()">Continue</button>
 <script>
-// JavaScript remains unchanged
 const ballsPerColor = 10;
-const colors = ['🔴','🔵','🔶','🔷','🔸','🔹','🔺','🔻'];
+const colors = ['🔴','🟡','🟢','🔶','🔷','⭐','🔺','🔼'];
 const extraFlasks = 2;
 const flaskCount = 10;
 const flaskSize = 10;
@@ -143,6 +153,7 @@ function renderGame() {
     container.appendChild(div);
   });
   updateInfo();
+  document.getElementById('continueBtn').style.display = 'none';
 }
 
 function handleClick(i) {
@@ -187,10 +198,17 @@ function checkWin() {
   const isWin = flasks.every(f => f.length === 0 || (f.length === flaskSize && f.every(b => b === f[0])));
   if (isWin && !moveInProgress) {
     wins++;
-    setTimeout(() => {
-      startGame();
-    }, 100);
+    animateWin();
+    document.getElementById('continueBtn').style.display = 'inline-block';
   }
+}
+
+function animateWin() {
+  document.querySelectorAll('.ball').forEach(ball => {
+    if (ball.textContent.trim() !== '') {
+      ball.classList.add('dance');
+    }
+  });
 }
 
 function startGame() {
